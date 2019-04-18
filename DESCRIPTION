@@ -1,0 +1,16 @@
+Package: ldaDSI
+Type: Package
+Title: Modified version lda package v1.4.2
+Version: 1.0
+Date: 2019-03-15
+Author: Arthur Koehl
+Maintainer: Arthur Koehl <avkoehl@ucdavis.edu>
+Description: Adds extra print statements and output for 
+			gibbs.collapsed.sampler lda implementation 
+			from 'lda' package
+License: LGPL
+LazyLoad: yes
+Suggests: Matrix, reshape2, ggplot2 (>= 1.0.0), penalized, nnet
+NeedsCompilation: yes
+Packaged: 2015-11-22 08:13:39 UTC; jonathanchang
+Depends: R (>= 2.10)
