@@ -491,8 +491,8 @@ SEXP collapsedGibbsSampler(SEXP documents,
     SEXP burnin_,
     SEXP compute_log_likelihood_,
     SEXP trace_,
-    SEXP save_state_interval_, 
-	SEXP odir_,
+    SEXP print_top_terms_interval_, 
+    SEXP vocab,
     SEXP freeze_topics_) {
   GetRNGstate();
   int dd;
@@ -515,13 +515,9 @@ SEXP collapsedGibbsSampler(SEXP documents,
   CHECKLEN(trace_, Integer, 1);
   int trace = INTEGER(trace_)[0];
 
-  // if 0, never if < 50 error, else write iter_model.txt to .
-  CHECKLEN(save_state_interval_, Integer, 1);
-  int save_state_interval = INTEGER(save_state_interval_)[0];
-  
-  //  odir is character string where model topic terms should be saved 
-  //  default is empty ""
-  char *odir = CHAR(STRING_ELT(odir_,0));
+  // if 0, never if < 50 error
+  CHECKLEN(print_top_terms_interval_, Integer, 1);
+  int print_top_terms_interval = INTEGER(print_top_terms_interval_)[0];
 
   CHECK(V_, Integer);
   int V = 0;
@@ -1112,22 +1108,9 @@ SEXP collapsedGibbsSampler(SEXP documents,
     }
 
 
-   /* print model to file if save_state_interval !=0 */
+   /* print top words of each topic if print_top_terms_interval !=0 */
    // if interval = 15, print model after iter 14 ... 29 and so on since iter starts at 0
-  if (save_state_interval != 0 && (iteration + 1) % save_state_interval == 0) { 
-    char iter[20] = { 0 };
-    char filename[256] = { 0 }; 
-    char *base = "_model.txt";
-
-    snprintf(iter, 20, "%d", iteration); // convert iteration to a string
-    strcat(filename, odir);
-    strcat(filename, iter);
-    strcat(filename, base);
-    FILE *fp = fopen(filename, "w");
-    if (fp == NULL){
-        error("error opening output file");
-    }
-
+  if (print_top_terms_interval != 0 && (iteration + 1) % print_top_terms_interval == 0) { 
     // I think its col-major order but not 100% sure.
 		// row major a[i,j] = a[j + i *nc]
 		// col major a[i,j] = a[i + j *nr]
@@ -1136,20 +1119,41 @@ SEXP collapsedGibbsSampler(SEXP documents,
     int nr = NUMROWS(topics);
     int nc = NUMCOLS(topics);
     int *topic_terms = INTEGER(topics);
-    fprintf(fp, "Iter: %d \n", iteration);
-    fprintf(fp, "TOPIC TERMS: \n", nr, nc);
-    fprintf(fp, "rows: %d, cols: %d\n", nr, nc);
-    int i,j;
+    int i,j,k, top;
     for (i = 0; i<nr; i++)
-    {
+    { 
+      int sortedindexes[nc];
+      int sortedvalues[nc];
       for (j = 0; j<nc; j++)
       {
-        fprintf(fp, "% d ", topic_terms[i + j *nr]);
+        int count = topic_terms[i + j * nr];
+	k = j - 1;
+	while ((k >= 0) && (sortedvalues[k] < count))
+	{
+	    sortedvalues[k + 1] = sortedvalues[k];
+	    sortedindexes[k + 1] = sortedindexes[k];
+	    k = k -1;
+	}
+	sortedvalues[k+1] = count;
+	sortedindexes[k+1] = j;
       }
-      fprintf(fp, "\n");
-    }
-  fclose(fp);
-  }// if save_state_interval
+
+      printf("topic %d :", i+1);
+      for (top = 0; top < 20; top++)
+      {
+	  const char* term = CHAR(STRING_ELT(vocab, sortedindexes[top]));
+          printf("% s ", term);
+      }
+
+      printf("\n");
+
+      for (top = 0; top < 20; top++)
+      {
+          printf("% d ", sortedvalues[top]);
+      }
+      printf("\n");
+    } 
+  }// if print_top_terms_interval
 
 
   } // iterations
