@@ -1116,6 +1116,7 @@ SEXP collapsedGibbsSampler(SEXP documents,
 		// col major a[i,j] = a[i + j *nr]
     //
     //print topic terms dimensions
+    printf("Topic Terms on Iteration %d :", iteration);
     int nr = NUMROWS(topics);
     int nc = NUMCOLS(topics);
     int *topic_terms = INTEGER(topics);
@@ -1145,12 +1146,6 @@ SEXP collapsedGibbsSampler(SEXP documents,
           printf("% s ", term);
       }
 
-      printf("\n");
-
-      for (top = 0; top < 20; top++)
-      {
-          printf("% d ", sortedvalues[top]);
-      }
       printf("\n");
     } 
   }// if print_top_terms_interval
