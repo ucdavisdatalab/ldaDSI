@@ -3,7 +3,9 @@
 ## ldaDSI ##
 
 This is a modification of the 'lda' R package written by Jonathan Chang (a student of David Blei). [link to original](https://cran.r-project.org/web/packages/lda/lda.pdf). 
-The modifications have been made to the function 'lda.collapsed.gibss.sampler'. Use this version if you want to run a topic model that will output the topic terms matrix at preset save state intervals (e.g every 200th iteration, save the topic terms matrix to a file).
+The modifications have been made to the function 'lda.collapsed.gibbs.sampler'.
+Use this version if you want to run a topic model that will output the top 15 terms for each topic at preset intervals (e.g every 200th iteration).
+In addition this version prints the iteration number while the model is running by default.
 
 ## USAGE ##
 
