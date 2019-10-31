@@ -5,7 +5,7 @@ Version: 1.0
 Date: 2019-03-15
 Author: Arthur Koehl
 Maintainer: Arthur Koehl <avkoehl@ucdavis.edu>
-Description: Adds extra print statements and output for 
+Description: Fork of lda packages that Adds extra print statements and output for 
 			gibbs.collapsed.sampler lda implementation 
 			from 'lda' package
 License: LGPL
